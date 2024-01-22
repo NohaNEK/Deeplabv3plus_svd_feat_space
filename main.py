@@ -168,6 +168,7 @@ def get_dataset(opts):
 def add_gta_infos_in_tensorboard(writer,imgs,labels,coco_imgs,rec_imgs,outputs,cur_itrs,denorm,train_loader):
         img=imgs[0].detach().cpu().numpy()
         img=(denorm(img)*255).astype(np.uint8)
+        writer.add_image('gta_image',img,cur_itrs,dataformats='CHW')
 
         rec_img=rec_imgs[0].detach().cpu().numpy()
         rec_img=(denorm(rec_img)*255).astype(np.uint8)
@@ -178,16 +179,16 @@ def add_gta_infos_in_tensorboard(writer,imgs,labels,coco_imgs,rec_imgs,outputs,c
         
         lbs=labels[0].detach().cpu().numpy()
         lbs=train_loader.dataset.decode_target(lbs).astype('uint8')
+        writer.add_image('gta_ground_truth',lbs,cur_itrs,dataformats='HWC')
         
         pred=outputs.detach().max(1)[1].cpu().numpy()
         pred = train_loader.dataset.decode_target(pred[0]).astype('uint8')
+        writer.add_image('gta_pred',pred,cur_itrs,dataformats='HWC')
         
         img_grid = [img,coco_img,rec_img]
         writer.add_images('svd transformation of gta image 0',img_grid,cur_itrs,dataformats='CHW')
 
-        img_grid =  [rec_img,np.transpose(lbs,(2,0,1)),np.transpose(pred,(2,0,1))]
-        writer.add_images('test sample gta 0',img_grid,cur_itrs,dataformats='CHW')
-
+        
         img=imgs[1].detach().cpu().numpy()
         img=(denorm(img)*255).astype(np.uint8)
 
@@ -199,10 +200,8 @@ def add_gta_infos_in_tensorboard(writer,imgs,labels,coco_imgs,rec_imgs,outputs,c
 
         img_grid =  [img,coco_img,rec_img]
         writer.add_images('svd transformation of gta image 1',img_grid,cur_itrs,dataformats='CHW')
-        lbs=labels[1].detach().cpu().numpy()
-        lbs=train_loader.dataset.decode_target(lbs).astype('uint8')
-        img_grid =  [rec_img,np.transpose(lbs,(2,0,1)),np.transpose(pred,(2,0,1))]
-        writer.add_images('test sample gta 1',img_grid,cur_itrs,dataformats='CHW')
+       
+       
 
 def add_cs_in_tensorboard(writer,imgs,labels,outputs,cur_itrs,denorm,train_loader,i):
     img=imgs[i].detach().cpu().numpy()
