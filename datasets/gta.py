@@ -79,12 +79,11 @@ class GTA(data.Dataset):
         self.target_rgb = []
         self.coco_imgs =[]
         self.transform = transform
-        self.transform2 = transform2
 
         if split != 'all' : 
             self.images_dir = os.path.join(self.root, 'Scene', split)
             self.targets_dir = os.path.join(self.root, self.mode, split)
-            self.coco_image = os.path.join("/media/fahad/Crucial X8/deeplabv3plus/rgb_mask_contrib/train2017")
+            self.coco_image = os.path.join("/media/fahad/Crucial X8/deeplabv3plus/coco_ds/train2017")
            
             self.split = split
             if not os.path.isdir(self.images_dir) or not os.path.isdir(self.targets_dir):
@@ -105,11 +104,9 @@ class GTA(data.Dataset):
             for split in splits : 
                 self.images_dir = os.path.join(self.root, 'Scene', split)
                 self.targets_dir = os.path.join(self.root, self.mode, split)
-                self.coco_image = os.path.join("/media/fahad/Crucial X8/deeplabv3plus/rgb_mask_contrib/train2017")
+                self.coco_image = os.path.join("/media/fahad/Crucial X8/deeplabv3plus/coco_ds/train2017")
              
-                # self.target_dir_rgb = os.path.join(self.root,'ColorIds',split)
-                # print('target',self.targets_dir)
-                # print('target rgb',self.target_dir_rgb)
+              
                 self.split = split
                 if not os.path.isdir(self.images_dir) or not os.path.isdir(self.targets_dir) or not os.path.isdir(self.coco_image):
                     raise RuntimeError('Dataset not found or incomplete. Please make sure all required folders for the'
@@ -120,8 +117,7 @@ class GTA(data.Dataset):
                 
                 for file_name in sorted(os.listdir(self.targets_dir)):
                     self.targets.append(os.path.join(self.targets_dir, file_name))
-                # for file_name in sorted(os.listdir(self.target_dir_rgb)):
-                #     self.target_rgb.append(os.path.join(self.target_dir_rgb, file_name))
+                
                 for f_coco in sorted(os.listdir(self.coco_image)):
                     self.coco_imgs.append(os.path.join(self.coco_image,f_coco))
 
@@ -156,13 +152,10 @@ class GTA(data.Dataset):
 
 
         if self.transform:
-            # image, target,rgb_labels = self.transform(image, target,rgb_labels)
             image, target , coco_img= self.transform(image, target,coco_img)
       
 
         target = self.encode_target(target)
-
-        # rgb_lb = self.decode_target(target2)
 
         return image, target,coco_img
 

@@ -51,7 +51,7 @@ def get_argparser():
     parser.add_argument("--test_only", action='store_true', default=False)
     parser.add_argument("--save_val_results", action='store_true', default=False,
                         help="save segmentation results to \"./results\"")
-    parser.add_argument("--total_itrs", type=int, default=60e3,
+    parser.add_argument("--total_itrs", type=int, default=100e3,
                         help="epoch number (default: 30k)")
     parser.add_argument("--lr", type=float, default=0.01,
                         help="learning rate (default: 0.01)")
@@ -159,12 +159,11 @@ def get_dataset(opts):
         
 
         train_dst = GTA(root=opts.data_root,
-                               split='all', transform=train_transform,transform2=None)
-        val_dst = Cityscapes(root='/media/fahad/Crucial X8/gta5/gta/',
-                             split='val', transform=val_transform)
-        # val_dst = GTAV(root='/media/fahad/Crucial X8/gta5/gta/',
-        #                      split='sub_bdd', transform=val_transform)
-    return train_dst, val_dst #,coco_ds
+                               split='all', transform=train_transform)
+        val_dst = Cityscapes(root='/media/fahad/Crucial X8/datasets/cityscapes/',
+                        split='val', transform=val_transform)
+        
+    return train_dst, val_dst 
 def add_gta_infos_in_tensorboard(writer,imgs,labels,coco_imgs,rec_imgs,outputs,cur_itrs,denorm,train_loader):
         img=imgs[0].detach().cpu().numpy()
         img=(denorm(img)*255).astype(np.uint8)
@@ -172,6 +171,7 @@ def add_gta_infos_in_tensorboard(writer,imgs,labels,coco_imgs,rec_imgs,outputs,c
 
         rec_img=rec_imgs[0].detach().cpu().numpy()
         rec_img=(denorm(rec_img)*255).astype(np.uint8)
+        writer.add_image('gta_rec_image',rec_img,cur_itrs,dataformats='CHW')
 
         coco_img = coco_imgs[0].detach().cpu().numpy()
         coco_img = (denorm(coco_img)*255).astype(np.uint8)
@@ -471,7 +471,8 @@ def main():
             
                 
             if (cur_itrs) % 100 == 0: 
-                writer.add_scalar('train_image_loss', np_loss, cur_itrs)
+                interval_loss=interval_loss/100
+                writer.add_scalar('train_image_loss', interval_loss, cur_itrs)
                 writer.add_scalar('LR_Backbone',scheduler.get_lr()[0],cur_itrs)
                 writer.add_scalar('LR_classifier',scheduler.get_lr()[1],cur_itrs)
                 
@@ -485,11 +486,7 @@ def main():
                 writer.add_histogram('layer2_feats',feat_image['layer2'],cur_itrs)
                 writer.add_histogram('layer3_feats',feat_image['layer3'],cur_itrs)
                 writer.add_histogram('out_feats',feat_image['out'],cur_itrs)
-                writer.add_scalar('mean_lowfeat', torch.mean(feat_image['low_level'][0][0]).detach().cpu().numpy(), cur_itrs)
-      
-                writer.add_scalar('mean_outfeat', torch.mean(feat_image['out'][0][0]).detach().cpu().numpy(), cur_itrs)
-                writer.add_scalar('mean_outfeat', torch.mean(feat_image['layer2'][0][0]).detach().cpu().numpy(), cur_itrs)
-                writer.add_scalar('mean_outfeat', torch.mean(feat_image['layer3'][0][0]).detach().cpu().numpy(), cur_itrs)
+              
             if (cur_itrs) % opts.val_interval == 0:
                 save_ckpt('checkpoints/latest_%s_%s_os%d.pth' %
                           (opts.model, opts.dataset, opts.output_stride))
