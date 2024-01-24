@@ -171,10 +171,11 @@ def add_gta_infos_in_tensorboard(writer,imgs,labels,coco_imgs,rec_imgs,outputs,c
 
         rec_img=rec_imgs[0].detach().cpu().numpy()
         rec_img=(denorm(rec_img)*255).astype(np.uint8)
-        writer.add_image('gta_rec_image',rec_img,cur_itrs,dataformats='CHW')
+        writer.add_image('gta_randomized_image',rec_img,cur_itrs,dataformats='CHW')
 
         coco_img = coco_imgs[0].detach().cpu().numpy()
         coco_img = (denorm(coco_img)*255).astype(np.uint8)
+        writer.add_image('coco_image',rec_img,cur_itrs,dataformats='CHW')
         
         
         lbs=labels[0].detach().cpu().numpy()
@@ -186,7 +187,7 @@ def add_gta_infos_in_tensorboard(writer,imgs,labels,coco_imgs,rec_imgs,outputs,c
         writer.add_image('gta_pred',pred,cur_itrs,dataformats='HWC')
         
         img_grid = [img,coco_img,rec_img]
-        writer.add_images('svd transformation of gta image 0',img_grid,cur_itrs,dataformats='CHW')
+        writer.add_images('Randomized gta image 0',img_grid,cur_itrs,dataformats='CHW')
 
         
         img=imgs[1].detach().cpu().numpy()
@@ -199,7 +200,7 @@ def add_gta_infos_in_tensorboard(writer,imgs,labels,coco_imgs,rec_imgs,outputs,c
         coco_img = (denorm(coco_img)*255).astype(np.uint8)
 
         img_grid =  [img,coco_img,rec_img]
-        writer.add_images('svd transformation of gta image 1',img_grid,cur_itrs,dataformats='CHW')
+        writer.add_images('Randomized of gta image 1',img_grid,cur_itrs,dataformats='CHW')
        
        
 
@@ -322,7 +323,7 @@ def main():
     torch.manual_seed(opts.random_seed)
     np.random.seed(opts.random_seed)
     random.seed(opts.random_seed)
-    writer = SummaryWriter("/media/fahad/Crucial X8/deeplabv3plus/logs/R101_svd_rand_s1s2")#original_baseline
+    writer = SummaryWriter("/media/fahad/Crucial X8/deeplabv3plus/Deeplabv3plus_baseline/logs/R101_svd_rand_s1s2")#original_baseline
 
     # Setup dataloader
     if opts.dataset == 'voc' and not opts.crop_val:
