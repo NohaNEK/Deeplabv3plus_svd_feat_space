@@ -379,26 +379,25 @@ class ExtRandomCrop(object):
         assert img.size == lbl.size, 'size of img and lbl should be the same. %s, %s'%(img.size, lbl.size)
         if self.padding > 0:
             img = F.pad(img, self.padding)
-            coco_img = F.pad(coco_img, self.padding)
+      
             lbl = F.pad(lbl, self.padding)
 
         # pad the width if needed
         if self.pad_if_needed and img.size[0] < self.size[1]:
             img = F.pad(img, padding=int((1 + self.size[1] - img.size[0]) / 2))
-            coco_img = F.pad(coco_img, padding=int((1 + self.size[1] - coco_img.size[0]) / 2))
+        
             lbl = F.pad(lbl, padding=int((1 + self.size[1] - lbl.size[0]) / 2))
 
         # pad the height if needed
         if self.pad_if_needed and img.size[1] < self.size[0]:
             img = F.pad(img, padding=int((1 + self.size[0] - img.size[1]) / 2))
-            coco_img = F.pad(coco_img, padding=int((1 + self.size[0] - coco_img.size[1]) / 2))
+          
             lbl = F.pad(lbl, padding=int((1 + self.size[0] - lbl.size[1]) / 2))
 
         i, j, h, w = self.get_params(img, self.size)
 
 
-        return F.crop(img, i, j, h, w), F.crop(lbl, i, j, h, w),F.crop(coco_img, i, j, h, w)
-
+        return F.crop(img, i, j, h, w), F.crop(lbl, i, j, h, w), coco_img 
     def __repr__(self):
         return self.__class__.__name__ + '(size={0}, padding={1})'.format(self.size, self.padding)
 
@@ -428,7 +427,7 @@ class ExtResize(object):
             PIL Image: Rescaled image.
         """
 
-        return F.resize(img, self.size, self.interpolation), F.resize(lbl, self.size, Image.NEAREST),F.resize(coco_img, self.size, self.interpolation)
+        return F.resize(img, self.size, self.interpolation), F.resize(lbl, self.size, Image.NEAREST),F.resize(coco_img, (768,768), self.interpolation)
     def __repr__(self):
         interpolate_str = _pil_interpolation_to_str[self.interpolation]
         return self.__class__.__name__ + '(size={0}, interpolation={1})'.format(self.size, interpolate_str) 

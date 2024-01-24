@@ -100,6 +100,7 @@ class GTA(data.Dataset):
         
         
         else:
+            
             splits = ['train', 'val', 'test']
             for split in splits : 
                 self.images_dir = os.path.join(self.root, 'Scene', split)
@@ -145,10 +146,14 @@ class GTA(data.Dataset):
         """
         image = Image.open(self.images[index]).convert('RGB')
         target = Image.open(self.targets[index])
-     
+        
         id = random.randint(0,len(self.coco_imgs)-1)
+        # print(self.images[index])
         # print(id)
+ 
+        
         coco_img = Image.open(self.coco_imgs[id]).convert('RGB')
+
 
 
         if self.transform:
