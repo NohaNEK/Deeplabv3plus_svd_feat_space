@@ -175,7 +175,7 @@ def add_gta_infos_in_tensorboard(writer,imgs,labels,coco_imgs,rec_imgs,outputs,c
 
         coco_img = coco_imgs[0].detach().cpu().numpy()
         coco_img = (denorm(coco_img)*255).astype(np.uint8)
-        writer.add_image('coco_image',rec_img,cur_itrs,dataformats='CHW')
+        writer.add_image('coco_image',coco_img,cur_itrs,dataformats='CHW')
         
         
         lbs=labels[0].detach().cpu().numpy()
