@@ -186,21 +186,9 @@ def add_gta_infos_in_tensorboard(writer,imgs,labels,coco_imgs,rec_imgs,outputs,c
         pred = train_loader.dataset.decode_target(pred[0]).astype('uint8')
         writer.add_image('gta_pred',pred,cur_itrs,dataformats='HWC')
         
-        img_grid = [img,coco_img,rec_img]
-        writer.add_images('Randomized gta image 0',img_grid,cur_itrs,dataformats='CHW')
+       
 
         
-        img=imgs[1].detach().cpu().numpy()
-        img=(denorm(img)*255).astype(np.uint8)
-
-        rec_img=rec_imgs[1].detach().cpu().numpy()
-        rec_img=(denorm(rec_img)*255).astype(np.uint8)
-
-        coco_img = coco_imgs[1].detach().cpu().numpy()
-        coco_img = (denorm(coco_img)*255).astype(np.uint8)
-
-        img_grid =  [img,coco_img,rec_img]
-        writer.add_images('Randomized of gta image 1',img_grid,cur_itrs,dataformats='CHW')
        
        
 
