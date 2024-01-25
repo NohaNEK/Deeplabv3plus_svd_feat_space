@@ -323,7 +323,7 @@ def main():
     torch.manual_seed(opts.random_seed)
     np.random.seed(opts.random_seed)
     random.seed(opts.random_seed)
-    writer = SummaryWriter("/media/fahad/Crucial X8/deeplabv3plus/Deeplabv3plus_baseline/logs/R101_svd_rand_s1s2")#original_baseline
+    writer = SummaryWriter("/media/fahad/Crucial X8/deeplabv3plus/Deeplabv3plus_baseline/logs/R101_svd_rand_s1s2_cpu")#original_baseline
 
     # Setup dataloader
     if opts.dataset == 'voc' and not opts.crop_val:
@@ -432,11 +432,6 @@ def main():
             # l=scheduler.get_last_lr()
             # print('l backbone',l[0])
             # print('l cls',l[1])
-            
-            images = images.to(device, dtype=torch.float32)
-            coco_img = coco_img.to(device, dtype=torch.float32)
-            
-            labels = labels.to(device, dtype=torch.long)
             u,s,v = torch.linalg.svd(images)
             s2= torch.linalg.svdvals(coco_img) 
     
@@ -444,6 +439,13 @@ def main():
      
  
             rec_imgs = u @ torch.diag_embed(s3) @ v
+            rec_imgs=rec_imgs.to(device,dtype=torch.float32)
+            
+            # images = images.to(device, dtype=torch.float32)
+            # coco_img = coco_img.to(device, dtype=torch.float32)
+            
+            labels = labels.to(device, dtype=torch.long)
+            
             # for idx in range(len(rec_imgs)):
             #     rec_imgs[idx][rec_imgs[idx]<0] = 0
             #     rec_imgs[idx][rec_imgs[idx]>1] = 1
