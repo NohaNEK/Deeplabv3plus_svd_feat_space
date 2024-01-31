@@ -286,7 +286,14 @@ def writer_add_features(writer, name, tensor_feat, iterations):
     img_grid = cv2.applyColorMap(np.array(img_grid, dtype=np.uint8), cv2.COLORMAP_JET)
     writer.add_image(name, img_grid, iterations, dataformats='HWC')
 
-
+def writer_add_lowfeat(writer, name, tensor_feat, iterations):
+    feat_img = tensor_feat[0].detach().cpu().numpy()
+    # img_grid = self.make_grid(feat_img)
+    
+    feat_img = feat_img -np.min(feat_img)
+    img_grid = 255*feat_img/np.max(feat_img)
+    img_grid = cv2.applyColorMap(np.array(img_grid, dtype=np.uint8), cv2.COLORMAP_JET)
+    writer.add_image(name, img_grid, iterations, dataformats='HWC')
     
 def main():
     opts = get_argparser().parse_args()
@@ -461,7 +468,14 @@ def main():
                 writer.add_histogram('feat_lowl_compress_rand_from_images',feat_image['low_level_compress_rand'],cur_itrs)
                 writer.add_histogram('feat_lowl_decompress_rand_from_images',feat_image['low_level_rand'],cur_itrs)
                 writer.add_histogram('low_level_coco_image',feat_image['low_level_coco'],cur_itrs)
-              
+
+                ## display feat low level
+                writer_add_lowfeat(writer,'feat_lowl_compressed',feat_image['low_level_compress'],cur_itrs)
+                writer_add_lowfeat(writer,'feat_lowl_compressed_rand',feat_image['low_level_compress_rand'],cur_itrs)
+                writer_add_features(writer,'feat_lowl_rand',feat_image['low_level_rand'],cur_itrs)
+
+
+
             if (cur_itrs) % opts.val_interval == 0:
                 save_ckpt('checkpoints/latest_%s_%s_os%d.pth' %
                           (opts.model, opts.dataset, opts.output_stride))
