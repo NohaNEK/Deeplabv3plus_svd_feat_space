@@ -45,7 +45,7 @@ class DeepLabHeadV3Plus(nn.Module):
         self._init_weight()
 
     def forward(self, feature):
-        low_level_feature = self.project( feature['low_level'] )
+        low_level_feature = self.project( feature['low_level_rand'] )
         output_feature = self.aspp(feature['out'])
         output_feature = F.interpolate(output_feature, size=low_level_feature.shape[2:], mode='bilinear', align_corners=False)
         return self.classifier( torch.cat( [ low_level_feature, output_feature ], dim=1 ) )

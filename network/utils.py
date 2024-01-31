@@ -5,14 +5,26 @@ import torch.nn.functional as F
 from collections import OrderedDict
 
 class _SimpleSegmentationModel(nn.Module):
-    def __init__(self, backbone, classifier):
+    def __init__(self, backbone, autoencoder,classifier):
         super(_SimpleSegmentationModel, self).__init__()
         self.backbone = backbone
+        self.autoencoder = autoencoder
         self.classifier = classifier
         
-    def forward(self, x):
+    def forward(self, x,x_coco):
         input_shape = x.shape[-2:]
         features = self.backbone(x)
+        feat_coco = self.backbone(x_coco)
+        # u,s,v = torch.linalg.svd(features['low_level'])
+        # s2= torch.linalg.svdvals(feat_coco['low_level']) 
+    
+     
+ 
+        # features['low_level'] = u @ torch.diag_embed(s2) @ v
+        feat_low , x_enc, x_enc_rand=self.autoencoder(features['low_level'],feat_coco['low_level'])
+        features['low_level_rand']=feat_low
+        features['low_level_compress']=x_enc
+        features['low_level_compress_rand']=x_enc_rand
         x = self.classifier(features)
         x = F.interpolate(x, size=input_shape, mode='bilinear', align_corners=False)
         return x,features

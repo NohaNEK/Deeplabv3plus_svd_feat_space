@@ -164,14 +164,12 @@ def get_dataset(opts):
                         split='val', transform=val_transform)
         
     return train_dst, val_dst 
-def add_gta_infos_in_tensorboard(writer,imgs,labels,coco_imgs,rec_imgs,outputs,cur_itrs,denorm,train_loader):
+def add_gta_infos_in_tensorboard(writer,imgs,labels,coco_imgs,outputs,cur_itrs,denorm,train_loader):
         img=imgs[0].detach().cpu().numpy()
         img=(denorm(img)*255).astype(np.uint8)
         writer.add_image('gta_image',img,cur_itrs,dataformats='CHW')
 
-        rec_img=rec_imgs[0].detach().cpu().numpy()
-        rec_img=(denorm(rec_img)*255).astype(np.uint8)
-        writer.add_image('gta_randomized_image',rec_img,cur_itrs,dataformats='CHW')
+       
 
         coco_img = coco_imgs[0].detach().cpu().numpy()
         coco_img = (denorm(coco_img)*255).astype(np.uint8)
@@ -413,34 +411,14 @@ def main():
         cur_epochs += 1
         for (images, labels,coco_img) in train_loader:
             cur_itrs += 1
-            # print("cur_itrs",cur_itrs)
-            # print("cur_epochs", cur_epochs)
-            # print('last lr',scheduler.get_last_lr())
-            # print(' lr',scheduler.get_lr())
-            # l=scheduler.get_last_lr()
-            # print('l backbone',l[0])
-            # print('l cls',l[1])
-            u,s,v = torch.linalg.svd(images)
-            s2= torch.linalg.svdvals(coco_img) 
-    
-            #s3 = torch.cat([s[:,:,0].unsqueeze(2),s2[:,:,1:]],dim=2)
-     
- 
-            rec_imgs = u @ torch.diag_embed(s2) @ v
-            rec_imgs=rec_imgs.to(device,dtype=torch.float32)
             
-            # images = images.to(device, dtype=torch.float32)
-            # coco_img = coco_img.to(device, dtype=torch.float32)
+            images = images.to(device, dtype=torch.float32)
+            coco_img = coco_img.to(device, dtype=torch.float32)
             
-            labels = labels.to(device, dtype=torch.long)
-            
-            # for idx in range(len(rec_imgs)):
-            #     rec_imgs[idx][rec_imgs[idx]<0] = 0
-            #     rec_imgs[idx][rec_imgs[idx]>1] = 1
-           
+            labels = labels.to(device, dtype=torch.long)           
             
             optimizer.zero_grad()
-            outputs,feat_image = model(rec_imgs)
+            outputs,feat_image = model(images, coco_img)
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
@@ -468,7 +446,7 @@ def main():
                 writer.add_scalar('LR_classifier',scheduler.get_lr()[1],cur_itrs)
                 
                 interval_loss = 0.0
-                add_gta_infos_in_tensorboard(writer,images,labels,coco_img,rec_imgs,outputs,cur_itrs,denorm,train_loader)
+                add_gta_infos_in_tensorboard(writer,images,labels,coco_img,outputs,cur_itrs,denorm,train_loader)
                 writer_add_features(writer,'feat_lowl_from_images',feat_image['low_level'],cur_itrs)
                 writer_add_features(writer,'feat_out_from_images',feat_image['out'],cur_itrs)
                 writer_add_features(writer,'feat_layer2_from_images',feat_image['layer2'],cur_itrs)

@@ -1,0 +1,2 @@
+/media/fahad/Crucial X8/Mohamed/GTA/Scene/train/16551.png   coco id :129938
+/media/fahad/Crucial X8/Mohamed/GTA/Scene/val/18717.png   coco id :44686
