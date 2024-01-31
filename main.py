@@ -455,6 +455,12 @@ def main():
                 writer.add_histogram('layer2_feats',feat_image['layer2'],cur_itrs)
                 writer.add_histogram('layer3_feats',feat_image['layer3'],cur_itrs)
                 writer.add_histogram('out_feats',feat_image['out'],cur_itrs)
+
+                #### add visualization of feat of compression process for low level feat
+                writer.add_histogram('feat_lowl_compress_from_images',feat_image['low_level_compress'],cur_itrs)
+                writer.add_histogram('feat_lowl_compress_rand_from_images',feat_image['low_level_compress_rand'],cur_itrs)
+                writer.add_histogram('feat_lowl_decompress_rand_from_images',feat_image['low_level_rand'],cur_itrs)
+                writer.add_histogram('low_level_coco_image',feat_image['low_level_coco'],cur_itrs)
               
             if (cur_itrs) % opts.val_interval == 0:
                 save_ckpt('checkpoints/latest_%s_%s_os%d.pth' %

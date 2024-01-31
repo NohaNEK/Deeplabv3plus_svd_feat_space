@@ -15,6 +15,7 @@ class _SimpleSegmentationModel(nn.Module):
         input_shape = x.shape[-2:]
         features = self.backbone(x)
         feat_coco = self.backbone(x_coco)
+        features['low_level_coco']=feat_coco
         # u,s,v = torch.linalg.svd(features['low_level'])
         # s2= torch.linalg.svdvals(feat_coco['low_level']) 
     

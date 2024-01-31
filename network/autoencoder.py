@@ -94,17 +94,7 @@ class AutoEncoder(nn.Module):
                 elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
                     nn.init.constant_(m.weight, 1)
                     nn.init.constant_(m.bias, 0)
-            # for name, module in self.encoder.named_children():
-               
-            #         print(f"Layer: {name}")
-            #         print(module)
-            #         print(f"  conv1: {module.conv1}")
-                
-            
-            # for name, module in self.decoder.named_children():
-   
-            #         print(f"Layer: {name}")
-            #         print(f"  conv1: {module.conv1}")
+        
                    
 
         def _make_layer(self, block, planes, blocks, stride=1, dilate=False):
@@ -138,20 +128,21 @@ class AutoEncoder(nn.Module):
              x_enc=self.encoder(feat_x)
              x_coco = self.encoder(feat_coco)
              u,_,v = torch.linalg.svd(x_enc)
-             s2= torch.linalg.svdvals(x_coco) 
-    
      
- 
+             s2= torch.linalg.svdvals(x_coco) 
+
              x_enc_rand= u @ torch.diag_embed(s2) @ v
-             print(x_enc_rand.shape)
+            #  print(x_enc_rand.shape)
+            #  print(x_enc_rand)
              x_dec =self.decoder(x_enc_rand)
-             print(x_dec.shape)
+            #  print(x_dec.shape)
              return x_dec, x_enc,x_enc_rand
         
 
-m=AutoEncoder()
-x=torch.rand(256,100,100).unsqueeze(0)
-print(x.shape)
+# m=AutoEncoder()
+# x=torch.rand(256,100,100).unsqueeze(0)
+# x1=torch.rand(256,100,100).unsqueeze(0)
+# print(x)
 
 
-out=m(x)
+# out=m(x,x1)
