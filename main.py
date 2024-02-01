@@ -316,7 +316,7 @@ def main():
     torch.manual_seed(opts.random_seed)
     np.random.seed(opts.random_seed)
     random.seed(opts.random_seed)
-    writer = SummaryWriter("/media/fahad/Crucial X8/deeplabv3plus/Deeplabv3plus_baseline/logs/R101_svd_rand_s2")#original_baseline
+    writer = SummaryWriter("/media/fahad/Crucial X8/deeplabv3plus/Deeplabv3plus_baseline/logs/R101_svd_lowl_feat")#original_baseline
 
     # Setup dataloader
     if opts.dataset == 'voc' and not opts.crop_val:

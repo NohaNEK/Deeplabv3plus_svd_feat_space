@@ -77,8 +77,10 @@ class AutoEncoder(nn.Module):
             factor=self.inplanes
             for i in range(4):
                  factor/=4
-                
-                 layers_enc.append(self._make_layer(BasicBlock,int(factor)  ,2,stride = 1, dilate=True))
+                 block = self._make_layer(BasicBlock,int(factor)  ,2,stride = 1, dilate=True)
+                #  print(block)
+                 layers_enc.append(block)
+                #  print('block : ',i)
                  
             i=0
             
@@ -142,7 +144,7 @@ class AutoEncoder(nn.Module):
 # m=AutoEncoder()
 # x=torch.rand(256,100,100).unsqueeze(0)
 # x1=torch.rand(256,100,100).unsqueeze(0)
-# print(x)
+
 
 
 # out=m(x,x1)
