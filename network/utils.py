@@ -10,19 +10,21 @@ class _SimpleSegmentationModel(nn.Module):
         self.backbone = backbone
         self.autoencoder = autoencoder
         self.classifier = classifier
+
         
-    def forward(self, x,x_coco):
+    def forward(self, x,x_coco,mode=0):
         input_shape = x.shape[-2:]
         features = self.backbone(x)
-        feat_coco = self.backbone(x_coco)
-        features['low_level_coco']=feat_coco
+        with torch.no_grad():
+            feat_coco = self.backbone(x_coco)
+            features['low_level_coco']=feat_coco['low_level']
         # u,s,v = torch.linalg.svd(features['low_level'])
         # s2= torch.linalg.svdvals(feat_coco['low_level']) 
     
      
  
         # features['low_level'] = u @ torch.diag_embed(s2) @ v
-        feat_low , x_enc, x_enc_rand=self.autoencoder(features['low_level'],feat_coco['low_level'])
+        feat_low , x_enc, x_enc_rand=self.autoencoder(features['low_level'],feat_coco['low_level'],mode)
         features['low_level_rand']=feat_low
         features['low_level_compress']=x_enc
         features['low_level_compress_rand']=x_enc_rand

@@ -70,6 +70,7 @@ class AutoEncoder(nn.Module):
             self.inplanes = 256
             self.groups = groups
             self.base_width = width_per_group
+
            
             i=0
             layers_enc=[]
@@ -126,19 +127,23 @@ class AutoEncoder(nn.Module):
                                         norm_layer=norm_layer))
 
                 return nn.Sequential(*layers)
-        def forward(self, feat_x,feat_coco):
-             x_enc=self.encoder(feat_x)
-             x_coco = self.encoder(feat_coco)
-             u,_,v = torch.linalg.svd(x_enc)
-     
-             s2= torch.linalg.svdvals(x_coco) 
+        def forward(self, feat_x,feat_coco,mode =0):
+            x_enc=self.encoder(feat_x)
+             
+            if mode == 0 :
+                    x_coco = self.encoder(feat_coco) 
+                    u,_,v = torch.linalg.svd(x_enc)
+        
+                    s2= torch.linalg.svdvals(x_coco) 
 
-             x_enc_rand= u @ torch.diag_embed(s2) @ v
+                    x_enc_rand= u @ torch.diag_embed(s2) @ v
+            else:
+                    x_enc_rand=x_enc
             #  print(x_enc_rand.shape)
             #  print(x_enc_rand)
-             x_dec =self.decoder(x_enc_rand)
+            x_dec =self.decoder(x_enc_rand)
             #  print(x_dec.shape)
-             return x_dec, x_enc,x_enc_rand
+            return x_dec, x_enc,x_enc_rand
         
 
 # m=AutoEncoder()

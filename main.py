@@ -60,9 +60,9 @@ def get_argparser():
     parser.add_argument("--step_size", type=int, default=10000)
     parser.add_argument("--crop_val", action='store_true', default=False,
                         help='crop validation (default: False)')
-    parser.add_argument("--batch_size", type=int, default=6,
+    parser.add_argument("--batch_size", type=int, default=3,
                         help='batch size (default: 16)')
-    parser.add_argument("--val_batch_size", type=int, default=6,
+    parser.add_argument("--val_batch_size", type=int, default=3,
                         help='batch size for validation (default: 4)')
     parser.add_argument("--crop_size", type=int, default=768)
 
@@ -226,11 +226,12 @@ def validate(opts, model, loader, device, metrics,denorm=None,writer=None, cur_i
             images = images.to(device, dtype=torch.float32)
             labels = labels.to(device, dtype=torch.long)
 
-            outputs,_ = model(images)
+            outputs,_ = model(images,images,0)
             preds = outputs.detach().max(dim=1)[1].cpu().numpy()
             targets = labels.cpu().numpy()
 
             metrics.update(targets, preds)
+            
             if i <4 :
                 add_cs_in_tensorboard(writer,images,labels,outputs,cur_itrs,denorm,loader,i)
             if ret_samples_ids is not None and i in ret_samples_ids:  # get vis samples
@@ -287,7 +288,8 @@ def writer_add_features(writer, name, tensor_feat, iterations):
     writer.add_image(name, img_grid, iterations, dataformats='HWC')
 
 def writer_add_lowfeat(writer, name, tensor_feat, iterations):
-    feat_img = tensor_feat[0].detach().cpu().numpy()
+    feat_img = tensor_feat[0].detach().cpu().numpy()[0]
+
     # img_grid = self.make_grid(feat_img)
     
     feat_img = feat_img -np.min(feat_img)
@@ -426,7 +428,7 @@ def main():
             labels = labels.to(device, dtype=torch.long)           
             
             optimizer.zero_grad()
-            outputs,feat_image = model(images, coco_img)
+            outputs,feat_image = model(images, coco_img,0)
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
@@ -468,6 +470,7 @@ def main():
                 writer.add_histogram('feat_lowl_compress_from_images',feat_image['low_level_compress'],cur_itrs)
                 writer.add_histogram('feat_lowl_compress_rand_from_images',feat_image['low_level_compress_rand'],cur_itrs)
                 writer.add_histogram('feat_lowl_decompress_rand_from_images',feat_image['low_level_rand'],cur_itrs)
+                print(feat_image['low_level_coco'].shape)
                 writer.add_histogram('low_level_coco_image',feat_image['low_level_coco'],cur_itrs)
 
                 ## display feat low level
