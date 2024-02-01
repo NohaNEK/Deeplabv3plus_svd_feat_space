@@ -465,16 +465,16 @@ def main():
        
 
                 #### add visualization of feat of compression process for low level feat
-                writer.add_histogram('feat_lowl_compress_from_images',feat_image['low_level_compress'],cur_itrs)
-                writer.add_histogram('feat_lowl_compress_rand_from_images',feat_image['low_level_compress_rand'],cur_itrs)
-                writer.add_histogram('feat_lowl_decompress_rand_from_images',feat_image['low_level_rand'],cur_itrs)
+                writer.add_histogram('low_feats_compress_from_images',feat_image['low_level_compress'],cur_itrs)
+                writer.add_histogram('low_featscompress_rand_from_images',feat_image['low_level_compress_rand'],cur_itrs)
+                writer.add_histogram('low_feats_decompress_rand_from_images',feat_image['low_level_rand'],cur_itrs)
                 # print(feat_image['low_level_coco'].shape)
                 # writer.add_histogram('low_level_coco_image',feat_image['low_level_coco'],cur_itrs)
 
                 ## display feat low level
                 writer_add_lowfeat(writer,'feat_lowl_compressed',feat_image['low_level_compress'],cur_itrs)
                 writer_add_lowfeat(writer,'feat_lowl_compressed_rand',feat_image['low_level_compress_rand'],cur_itrs)
-                writer_add_features(writer,'feat_lowl_decompress_rand',feat_image['low_level_rand'],cur_itrs)
+                writer_add_features(writer,'feat_lowl_decompressed_rand',feat_image['low_level_rand'],cur_itrs)
 
 
 
