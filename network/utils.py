@@ -18,13 +18,14 @@ class _SimpleSegmentationModel(nn.Module):
         with torch.no_grad():
             feat_coco = self.backbone(x_coco)
             features['low_level_coco']=feat_coco['low_level']
+            del feat_coco
         # u,s,v = torch.linalg.svd(features['low_level'])
         # s2= torch.linalg.svdvals(feat_coco['low_level']) 
     
      
  
         # features['low_level'] = u @ torch.diag_embed(s2) @ v
-        feat_low , x_enc, x_enc_rand=self.autoencoder(features['low_level'],feat_coco['low_level'],mode)
+        feat_low , x_enc, x_enc_rand=self.autoencoder(features['low_level'],features['low_level_coco'],mode)
         features['low_level_rand']=feat_low
         features['low_level_compress']=x_enc
         features['low_level_compress_rand']=x_enc_rand

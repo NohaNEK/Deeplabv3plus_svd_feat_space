@@ -78,7 +78,7 @@ class AutoEncoder(nn.Module):
             factor=self.inplanes
             for i in range(4):
                  factor/=4
-                 block = self._make_layer(BasicBlock,int(factor)  ,2,stride = 1, dilate=True)
+                 block = self._make_layer(BasicBlock,int(factor)  ,1,stride = 1, dilate=True)
                 #  print(block)
                  layers_enc.append(block)
                 #  print('block : ',i)
@@ -87,7 +87,7 @@ class AutoEncoder(nn.Module):
             
             for i in range(4):     
                 factor*=4
-                layers_dec.append(self._make_layer(BasicBlock, int(factor) ,2,stride = 1, dilate=True))
+                layers_dec.append(self._make_layer(BasicBlock, int(factor) ,1,stride = 1, dilate=True))
             self.encoder= nn.Sequential(*layers_enc)
             self.decoder =nn.Sequential(*layers_dec)
             for m in self.modules():
@@ -131,12 +131,13 @@ class AutoEncoder(nn.Module):
             x_enc=self.encoder(feat_x)
              
             if mode == 0 :
-                    x_coco = self.encoder(feat_coco) 
-                    u,_,v = torch.linalg.svd(x_enc)
-        
-                    s2= torch.linalg.svdvals(x_coco) 
+                    with torch.no_grad():
+                        x_coco = self.encoder(feat_coco) 
+                        u,_,v = torch.linalg.svd(x_enc)
+            
+                        s2= torch.linalg.svdvals(x_coco) 
 
-                    x_enc_rand= u @ torch.diag_embed(s2) @ v
+                        x_enc_rand= u @ torch.diag_embed(s2) @ v
             else:
                     x_enc_rand=x_enc
             #  print(x_enc_rand.shape)

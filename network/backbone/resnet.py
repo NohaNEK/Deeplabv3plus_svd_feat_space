@@ -210,9 +210,9 @@ class ResNet(nn.Module):
 
         x_l1 = self.layer1(x)
         x = self.layer2(x_l1)
-        layers['layer2'] = x
+        # layers['layer2'] = x
         x = self.layer3(x)
-        layers['layer3'] = x
+        # layers['layer3'] = x
         x_l4 = self.layer4(x)
         layers['low_level'] = x_l1
         layers['out'] = x_l4

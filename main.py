@@ -60,9 +60,9 @@ def get_argparser():
     parser.add_argument("--step_size", type=int, default=10000)
     parser.add_argument("--crop_val", action='store_true', default=False,
                         help='crop validation (default: False)')
-    parser.add_argument("--batch_size", type=int, default=3,
+    parser.add_argument("--batch_size", type=int, default=6,
                         help='batch size (default: 16)')
-    parser.add_argument("--val_batch_size", type=int, default=3,
+    parser.add_argument("--val_batch_size", type=int, default=6,
                         help='batch size for validation (default: 4)')
     parser.add_argument("--crop_size", type=int, default=768)
 
@@ -347,7 +347,7 @@ def main():
     optimizer = torch.optim.SGD(params=[
         {'params': model.backbone.parameters(), 'lr': 0.1 * opts.lr},
         {'params': model.classifier.parameters(), 'lr': opts.lr},
-        {'params':model.autoencoder.parameters(),'lr':0.1*opts.lr}
+        {'params':model.autoencoder.parameters(),'lr':opts.lr}
     ], lr=opts.lr, momentum=0.9, weight_decay=opts.weight_decay)
     # optimizer = torch.optim.SGD(params=model.parameters(), lr=opts.lr, momentum=0.9, weight_decay=opts.weight_decay)
     # torch.optim.lr_scheduler.StepLR(optimizer, step_size=opts.lr_decay_step, gamma=opts.lr_decay_factor)
@@ -454,29 +454,27 @@ def main():
                 writer.add_scalar('train_image_loss', interval_loss, cur_itrs)
                 writer.add_scalar('LR_Backbone',scheduler.get_lr()[0],cur_itrs)
                 writer.add_scalar('LR_classifier',scheduler.get_lr()[1],cur_itrs)
+                writer.add_scalar('LR_autoencoder',scheduler.get_lr()[2],cur_itrs)
                 
                 interval_loss = 0.0
                 add_gta_infos_in_tensorboard(writer,images,labels,coco_img,outputs,cur_itrs,denorm,train_loader)
                 writer_add_features(writer,'feat_lowl_from_images',feat_image['low_level'],cur_itrs)
-                writer_add_features(writer,'feat_out_from_images',feat_image['out'],cur_itrs)
-                writer_add_features(writer,'feat_layer2_from_images',feat_image['layer2'],cur_itrs)
-                writer_add_features(writer,'feat_layer3_from_images',feat_image['layer3'],cur_itrs)
+                # writer_add_features(writer,'feat_out_from_images',feat_image['out'],cur_itrs)
                 writer.add_histogram('low_feats',feat_image['low_level'],cur_itrs)
-                writer.add_histogram('layer2_feats',feat_image['layer2'],cur_itrs)
-                writer.add_histogram('layer3_feats',feat_image['layer3'],cur_itrs)
-                writer.add_histogram('out_feats',feat_image['out'],cur_itrs)
+           
+       
 
                 #### add visualization of feat of compression process for low level feat
                 writer.add_histogram('feat_lowl_compress_from_images',feat_image['low_level_compress'],cur_itrs)
                 writer.add_histogram('feat_lowl_compress_rand_from_images',feat_image['low_level_compress_rand'],cur_itrs)
                 writer.add_histogram('feat_lowl_decompress_rand_from_images',feat_image['low_level_rand'],cur_itrs)
-                print(feat_image['low_level_coco'].shape)
-                writer.add_histogram('low_level_coco_image',feat_image['low_level_coco'],cur_itrs)
+                # print(feat_image['low_level_coco'].shape)
+                # writer.add_histogram('low_level_coco_image',feat_image['low_level_coco'],cur_itrs)
 
                 ## display feat low level
                 writer_add_lowfeat(writer,'feat_lowl_compressed',feat_image['low_level_compress'],cur_itrs)
                 writer_add_lowfeat(writer,'feat_lowl_compressed_rand',feat_image['low_level_compress_rand'],cur_itrs)
-                writer_add_features(writer,'feat_lowl_rand',feat_image['low_level_rand'],cur_itrs)
+                writer_add_features(writer,'feat_lowl_decompress_rand',feat_image['low_level_rand'],cur_itrs)
 
 
 
