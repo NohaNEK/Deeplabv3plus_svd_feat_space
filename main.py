@@ -231,7 +231,7 @@ def validate(opts, model, loader, device, metrics,denorm=None,writer=None, cur_i
             targets = labels.cpu().numpy()
 
             metrics.update(targets, preds)
-            
+ 
             if i <4 :
                 add_cs_in_tensorboard(writer,images,labels,outputs,cur_itrs,denorm,loader,i)
             if ret_samples_ids is not None and i in ret_samples_ids:  # get vis samples
@@ -410,7 +410,7 @@ def main():
     if opts.test_only:
         model.eval()
         val_score, ret_samples = validate(
-            opts=opts, model=model, loader=val_loader, device=device, metrics=metrics, ret_samples_ids=vis_sample_id)
+            opts=opts, model=model, loader=val_loader, device=device, denorm=denorm,metrics=metrics, writer=writer,ret_samples_ids=vis_sample_id)
         print(metrics.to_str(val_score))
         return
 
