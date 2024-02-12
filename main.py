@@ -68,6 +68,8 @@ def get_argparser():
 
     parser.add_argument("--ckpt", default=None, type=str,
                         help="restore from checkpoint")
+    parser.add_argument("--log", default=None, type=str,
+                        help="log file")
     parser.add_argument("--continue_training", action='store_true', default=False)
 
     parser.add_argument("--loss_type", type=str, default='cross_entropy',
@@ -318,7 +320,7 @@ def main():
     torch.manual_seed(opts.random_seed)
     np.random.seed(opts.random_seed)
     random.seed(opts.random_seed)
-    writer = SummaryWriter("/media/fahad/Crucial X8/deeplabv3plus/Deeplabv3plus_baseline/logs/R101_svd_lowl_feat_sum_4ch_l1loss")#original_baseline
+    writer = SummaryWriter("/media/fahad/Crucial X8/deeplabv3plus/Deeplabv3plus_baseline/logs/"+opts.log)#original_baseline
 
     # Setup dataloader
     if opts.dataset == 'voc' and not opts.crop_val:
@@ -417,7 +419,7 @@ def main():
     interval_loss = 0
     f_loss=0
 
-    compression_loss=nn.L1Loss()
+    # compression_loss=nn.L1Loss()
     while True:  # cur_itrs < opts.total_itrs:
         # =====  Train  =====
         model.train()
@@ -432,15 +434,15 @@ def main():
             
             optimizer.zero_grad()
             outputs,feat_image = model(images, coco_img,0)
-            c_l=compression_loss(feat_image['low_level_rand'],feat_image['low_level'])
+            # c_l=compression_loss(feat_image['low_level_rand'],feat_image['low_level'])
             loss = criterion(outputs, labels)
-            l_total=loss+c_l
-            l_total.backward()
+            # l_total=loss+c_l
+            loss.backward()
             optimizer.step()
 
             np_loss = loss.detach().cpu().numpy()
             interval_loss += np_loss
-            f_loss+= c_l.detach().cpu().numpy()
+            # f_loss+= c_l.detach().cpu().numpy()
 
             
 
@@ -450,8 +452,8 @@ def main():
             if (cur_itrs) % 10 == 0:
                 interval_loss = interval_loss / 10
                 f_loss=f_loss/10
-                print("Epoch %d, Itrs %d/%d, Loss=%f , feat loss=%f" %
-                      (cur_epochs, cur_itrs, opts.total_itrs, interval_loss,f_loss))
+                print("Epoch %d, Itrs %d/%d, Loss=%f " %
+                      (cur_epochs, cur_itrs, opts.total_itrs, interval_loss))
                 
                 
             
@@ -461,7 +463,7 @@ def main():
                 f_loss=f_loss/100
 
                 writer.add_scalar('train_image_loss', interval_loss, cur_itrs)
-                writer.add_scalar('train_feat_loss', f_loss, cur_itrs)
+                # writer.add_scalar('train_feat_loss', f_loss, cur_itrs)
                 writer.add_scalar('LR_Backbone',scheduler.get_lr()[0],cur_itrs)
                 writer.add_scalar('LR_classifier',scheduler.get_lr()[1],cur_itrs)
                 writer.add_scalar('LR_autoencoder',scheduler.get_lr()[2],cur_itrs)
