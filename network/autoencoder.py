@@ -76,7 +76,7 @@ class AutoEncoder(nn.Module):
             layers_enc=[]
             layers_dec=[]
             factor=self.inplanes
-            for i in range(4):
+            for i in range(3):
                  factor/=4
                  block = self._make_layer(BasicBlock,int(factor)  ,1,stride = 1, dilate=True)
                 #  print(block)
@@ -85,7 +85,7 @@ class AutoEncoder(nn.Module):
                  
             i=0
             
-            for i in range(4):     
+            for i in range(3):     
                 factor*=4
                 layers_dec.append(self._make_layer(BasicBlock, int(factor) ,1,stride = 1, dilate=True))
             self.encoder= nn.Sequential(*layers_enc)

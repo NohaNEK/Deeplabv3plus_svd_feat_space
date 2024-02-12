@@ -29,6 +29,7 @@ class _SimpleSegmentationModel(nn.Module):
         features['low_level_rand']=feat_low
         features['low_level_compress']=x_enc
         features['low_level_compress_rand']=x_enc_rand
+        features['low_level_sum']=features['low_level_rand']+features['low_level']
         x = self.classifier(features)
         x = F.interpolate(x, size=input_shape, mode='bilinear', align_corners=False)
         return x,features
