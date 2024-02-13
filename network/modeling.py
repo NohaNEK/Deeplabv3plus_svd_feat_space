@@ -6,7 +6,7 @@ from .backbone import (
     hrnetv2,
     xception
 )
-from .autoencoder import AutoEncoder, AutoencoderBottleNet
+from .autoencoder import AutoEncoder, AutoencoderBottleNet, AutoencoderHighResolution
 def _segm_hrnet(name, backbone_name, num_classes, pretrained_backbone):
 
     backbone = hrnetv2.__dict__[backbone_name](pretrained_backbone)
@@ -54,7 +54,7 @@ def _segm_resnet(name, backbone_name, num_classes, output_stride, pretrained_bac
         classifier = DeepLabHead(inplanes , num_classes, aspp_dilate)
     # backbone = IntermediateLayerGetter(backbone, return_layers=return_layers)
 
-    autoencoder =AutoencoderBottleNet()
+    autoencoder =AutoencoderHighResolution()
     model = DeepLabV3(backbone, autoencoder,classifier)
     return model
 

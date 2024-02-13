@@ -298,7 +298,7 @@ class AutoencoderHighResolution(nn.Module):
             for i in range(4):
                  factor/=4
                  block = self._make_layer(Bottleneck,int(factor)  ,1,stride = 1, dilate=True)
-                 #print(block)
+                #  print(block)
                  #print(factor)
                  layers_enc.append(block)
                 #  print('block : ',i)
@@ -307,14 +307,15 @@ class AutoencoderHighResolution(nn.Module):
 
             for i in range(3):
                 factor*=4
-                if i == 2:
+                if i >= 1:
 
                   block=self._make_layer(block=Bottleneck,planes= int(factor) ,blocks=1,stride = 1, dilate=True)
                 else:
                   block=self._make_layer(block=Bottleneck,planes= int(factor) ,blocks=1,stride = 2, dilate=False)
+                # print(block)
 
-                print(block)
-                print(factor)
+                # print(block)
+                # print(factor)
                 layers_dec.append(block)
             self.encoder= nn.Sequential(*layers_enc)
             self.decoder =nn.Sequential(*layers_dec)
@@ -366,14 +367,13 @@ class AutoencoderHighResolution(nn.Module):
             factor =1
             for i in range(len(self.encoder)):
               x_enc = self.encoder[i](x_enc)
-              if(input_shape[0]*factor<= 768):
+            #   print('encoder '+str(i)+'shape',x_enc.shape)
+            #   print(input_shape[0]*factor)
+              if(input_shape[0]*factor<= 384):
                 x_enc =F.interpolate(x_enc,size=(input_shape[0]*factor,input_shape[1]*factor), mode='bilinear',align_corners=False)
                 factor*=2
-              print('encoder '+str(i)+'shape',x_enc.shape)
+            #   print('encoder '+str(i)+'shape',x_enc.shape)
 
-
-            #x_enc=self.encoder(feat_x)
-            print('encoder shape',x_enc.shape)
 
             if mode == 0 :
                     with torch.no_grad():
@@ -381,10 +381,10 @@ class AutoencoderHighResolution(nn.Module):
                         factor =1
                         for i in range(len(self.encoder)):
                           x_coco = self.encoder[i](x_coco)
-                          if(input_shape[0]*factor<= 768):
+                          if(input_shape[0]*factor<= 384):
                             x_coco =F.interpolate(x_coco,size=(input_shape[0]*factor,input_shape[1]*factor), mode='bilinear',align_corners=False)
                             factor*=2
-                          print('x_coco shape',x_coco.shape)
+                        #   print('x_coco shape',x_coco.shape)
                         u,_,v = torch.linalg.svd(x_enc)
 
                         s2= torch.linalg.svdvals(x_coco)
@@ -392,23 +392,22 @@ class AutoencoderHighResolution(nn.Module):
                         x_enc_rand= u @ torch.diag_embed(s2) @ v
             else:
                     x_enc_rand=x_enc
-            #  print(x_enc_rand.shape)
-            #  print(x_enc_rand)
+           
 
             x_dec =self.decoder(x_enc_rand)
 
-            print("dec shape",x_dec.shape)
+            # print("dec shape",x_dec.shape)
             return x_dec, x_enc,x_enc_rand
 
 
 
-m=AutoencoderHighResolution()
-# m=AutoencoderBottleNet()
-print(m)
-# m=AutoEncoder()
-x=torch.rand(256,192,192).unsqueeze(0)
-x1=torch.rand(256,192,192).unsqueeze(0)
-print(m(x,x)[0].shape)
+# m=AutoencoderHighResolution()
+# # # m=AutoencoderBottleNet()
+# # print(m)
+# # # m=AutoEncoder()
+# x=torch.rand(256,192,192).unsqueeze(0)
+# x1=torch.rand(256,192,192).unsqueeze(0)
+# print(m(x,x)[0].shape)
 
 
 
