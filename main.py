@@ -320,7 +320,7 @@ def main():
     torch.manual_seed(opts.random_seed)
     np.random.seed(opts.random_seed)
     random.seed(opts.random_seed)
-    writer = SummaryWriter("/media/fahad/Crucial X8/deeplabv3plus/Deeplabv3plus_baseline/logs/"+opts.log)#original_baseline
+    writer = SummaryWriter("/media/fahad/Crucial X8/deeplabv3plus/Deeplabv3plus_baseline/logs/R101_svd_lowl_feat_sum_4ch_bottlenet")#original_baseline
 
     # Setup dataloader
     if opts.dataset == 'voc' and not opts.crop_val:
@@ -460,7 +460,7 @@ def main():
                 
             if (cur_itrs) % 100 == 0: 
                 interval_loss=interval_loss/100
-                f_loss=f_loss/100
+                # f_loss=f_loss/100
 
                 writer.add_scalar('train_image_loss', interval_loss, cur_itrs)
                 # writer.add_scalar('train_feat_loss', f_loss, cur_itrs)
@@ -469,6 +469,7 @@ def main():
                 writer.add_scalar('LR_autoencoder',scheduler.get_lr()[2],cur_itrs)
                 
                 interval_loss = 0.0
+                print(feat_image['low_level'].shape)
                 add_gta_infos_in_tensorboard(writer,images,labels,coco_img,outputs,cur_itrs,denorm,train_loader)
                 writer_add_features(writer,'feat_lowl_from_images',feat_image['low_level'],cur_itrs)
                 writer_add_features(writer,'feat_lowl_sum_from_images',feat_image['low_level_sum'],cur_itrs)
